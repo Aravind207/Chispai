@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chispai — AI Wellness Coach</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:#0d0d10;color:#f0ede8;
+    min-height:100vh;display:flex;
+    align-items:flex-start;justify-content:center;
+    padding:2rem 1rem;
+  }
+  .app{width:100%;max-width:520px}
+
+  .header{text-align:center;margin-bottom:1.5rem}
+  .header h1{font-size:2rem;font-weight:300;letter-spacing:0.04em;color:#f0ede8}
+  .header p{font-size:13px;color:#888;margin-top:4px}
+
+  .garden{
+    background:#13131a;border:0.5px solid #2a2a38;
+    border-radius:16px;padding:1.5rem;margin-bottom:1rem;text-align:center;
+  }
+  .garden-tree{font-size:56px;line-height:1;margin-bottom:8px;transition:all 0.4s}
+  .garden-label{font-size:12px;color:#888;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px}
+  .garden-stage{font-size:15px;color:#c8b8f0;font-weight:400}
+  .progress-wrap{margin:1rem 0 0.5rem}
+  .progress-bg{height:4px;background:#1e1e28;border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;background:#7c5cbf;border-radius:2px;transition:width 0.5s ease}
+  .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:#555;margin-top:4px}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+  .stat{background:#13131a;border:0.5px solid #2a2a38;border-radius:12px;padding:12px 8px;text-align:center}
+  .stat .val{font-size:20px;font-weight:400;color:#f0ede8}
+  .stat .lbl{font-size:10px;color:#555;margin-top:3px;letter-spacing:0.04em;text-transform:uppercase}
+
+  .milestones{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+  .ms{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #2a2a38;color:#555;transition:all 0.3s}
+  .ms.done{border-color:#7c5cbf;color:#c8b8f0;background:#1a1428}
+
+  /* chat */
+  .chat-label{font-size:11px;color:#555;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
+  .chat-messages{
+    background:#13131a;border:0.5px solid #2a2a38;border-radius:12px;
+    padding:12px;min-height:120px;max-height:220px;overflow-y:auto;
+    margin-bottom:8px;display:flex;flex-direction:column;gap:8px;
+  }
+  .msg{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.5;max-width:90%}
+  .msg.user{background:#1a1428;border:0.5px solid #2a2a38;color:#c8b8f0;align-self:flex-end}
+  .msg.agent{background:#131a13;border:0.5px solid #2a3828;color:#7ec86e;align-self:flex-start}
+  .msg.system{background:#13131a;border:0.5px solid #2a2a38;color:#555;align-self:center;font-size:12px;font-style:italic}
+  .msg.error{background:#1f1010;border:0.5px solid #6b2020;color:#c84e4e;align-self:flex-start}
+  .typing{color:#555;font-size:12px;font-style:italic;align-self:flex-start;padding:6px 14px}
+
+  .chat-input-row{display:flex;gap:8px;margin-bottom:1rem}
+  .chat-input{
+    flex:1;background:#13131a;border:0.5px solid #2a2a38;border-radius:10px;
+    padding:12px 14px;color:#f0ede8;font-size:14px;outline:none;
+    font-family:inherit;transition:border-color 0.15s;
+  }
+  .chat-input:focus{border-color:#7c5cbf}
+  .chat-input::placeholder{color:#444}
+  .send-btn{
+    background:transparent;border:0.5px solid #7c5cbf;border-radius:10px;
+    padding:12px 18px;color:#c8b8f0;cursor:pointer;font-size:14px;
+    transition:all 0.15s;white-space:nowrap;
+  }
+  .send-btn:hover{background:#1a1428}
+  .send-btn:active{transform:scale(0.97)}
+  .send-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+  .habit-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+  .habit-btn{
+    background:#13131a;border:0.5px solid #2a2a38;border-radius:10px;
+    padding:10px 4px;cursor:pointer;text-align:center;transition:all 0.15s;color:#f0ede8;
+  }
+  .habit-btn:hover{border-color:#7c5cbf}
+  .habit-btn.active{background:#1a1428;border-color:#9b77d4;color:#c8b8f0}
+  .habit-btn .hname{font-size:12px;font-weight:400;display:block}
+  .habit-btn .hpts{font-size:10px;color:#555;display:block;margin-top:2px}
+  .habit-btn.active .hpts{color:#9b77d4}
+
+  .hints{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+  .hint{
+    font-size:11px;padding:5px 10px;border-radius:20px;
+    border:0.5px solid #2a2a38;color:#666;cursor:pointer;transition:all 0.15s;
+  }
+  .hint:hover{border-color:#7c5cbf;color:#c8b8f0}
+
+  .history-label{font-size:11px;color:#555;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;margin-top:1rem}
+  .history{background:#13131a;border:0.5px solid #2a2a38;border-radius:12px;overflow:hidden;max-height:180px;overflow-y:auto}
+  .hist-row{padding:10px 14px;font-size:12px;color:#888;border-bottom:0.5px solid #1e1e28;display:flex;justify-content:space-between;align-items:center}
+  .hist-row:last-child{border-bottom:none}
+  .hist-pts{color:#9b77d4;font-size:12px}
+  .badge{display:inline-block;font-size:10px;padding:1px 7px;border-radius:20px;margin-left:6px}
+  .badge.grace{background:#1f1a10;border:0.5px solid #6b4e1a;color:#c89a4e}
+  .badge.reset{background:#1f1010;border:0.5px solid #6b2020;color:#c84e4e}
+
+  .azure-badge{
+    margin-top:1.5rem;text-align:center;
+    font-size:11px;color:#444;letter-spacing:0.04em;
+  }
+  .azure-badge span{color:#7c5cbf}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <h1>Chispai</h1>
+    <p>Your AI wellness coach — tell me about your day</p>
+  </div>
+
+  <div class="garden">
+    <div class="garden-tree" id="gardenTree">🌱</div>
+    <div class="garden-label">Zen Garden</div>
+    <div class="garden-stage" id="gardenStage">Empty garden — begin your journey</div>
+    <div class="progress-wrap">
+      <div class="progress-bg"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-labels"><span id="ptsCurrent">0 pts</span><span id="ptsNext">100 pts</span></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="val" id="sTotalPts">0</div><div class="lbl">total pts</div></div>
+    <div class="stat"><div class="val" id="sStreak">0</div><div class="lbl">streak</div></div>
+    <div class="stat"><div class="val" id="sMult">×1.0</div><div class="lbl">multiplier</div></div>
+    <div class="stat"><div class="val" id="sEarned">+0</div><div class="lbl">today</div></div>
+  </div>
+
+  <div class="milestones" id="milestones"></div>
+
+  <div class="chat-label" style="margin-bottom:8px">Select habits or type below</div>
+  <div class="habit-grid" id="habitGrid"></div>
+
+  <div class="chat-label">Chat with Chispai</div>
+
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg system">Tell me which habits you completed today, or say you missed a day 🌿</div>
+  </div>
+
+  <div class="hints">
+    <div class="hint" onclick="fillHint(this)">I did water, gym and reading today</div>
+    <div class="hint" onclick="fillHint(this)">Completed all habits today!</div>
+    <div class="hint" onclick="fillHint(this)">I missed today</div>
+    <div class="hint" onclick="fillHint(this)">Just water and vitamins</div>
+  </div>
+
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Tell me about your day..." onkeydown="if(event.key==='Enter')sendMessage()" />
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send →</button>
+  </div>
+
+  <div class="history-label">History</div>
+  <div class="history" id="history">
+    <div class="hist-row" style="color:#444">No days logged yet</div>
+  </div>
+
+  <div class="azure-badge">Powered by <span>Azure Functions</span> · chispai-gamification.azurewebsites.net</div>
+
+</div>
+
+<script>
+const AZURE_URL = "https://chispai-gamification.azurewebsites.net/api/log";
+const HABIT_LIST=[
+  {key:"water",   label:"Water",   pts:20, icon:"💧"},
+  {key:"vitamins",label:"Vitamins",pts:15, icon:"💊"},
+  {key:"gym",     label:"Gym",     pts:50, icon:"🏋️"},
+  {key:"protein", label:"Protein", pts:20, icon:"🥩"},
+  {key:"reading", label:"Reading", pts:30, icon:"📖"},
+];
+let selectedHabits=new Set();
+const HABITS_MAP = {
+  water:["water","h2o","hydrat"],
+  vitamins:["vitamin","supplement","pill"],
+  gym:["gym","workout","exercise","lift","ran","run","jog","walk","train"],
+  protein:["protein","shake","meat","chicken","fish"],
+  reading:["read","book","article","study"]
+};
+const UNLOCKS=[[100,"Bonsai sprout"],[250,"Water ripples"],[500,"Cherry blossoms"],[1000,"Zen Temple"]];
+const TREES=["🌱","🌿","🌸","🌳","⛩️"];
+const ZEN_MSGS=["Keep nurturing this calm spirit 🌿","Your garden grows with every mindful step ✨","Beautiful harmony in your day 🌸","The path of a thousand miles begins with one step 🪨","Your inner spark shines bright today ⚡"];
+
+let state={total_points:0,streak_days:0,consecutive_misses:0,unlocked_rewards:[]};
+let dayCount=0;
+let history=[];
+
+function extractHabits(text){
+  const t=text.toLowerCase();
+  const found=[];
+  if(/all habit|everything|all five|full day/i.test(t)) return["water","vitamins","gym","protein","reading"];
+  for(const[habit,keywords]of Object.entries(HABITS_MAP)){
+    if(keywords.some(k=>t.includes(k))) found.push(habit);
+  }
+  return found;
+}
+
+function isMissedDay(text){
+  return /miss|skip|didn'?t|did not|nothing|none|no habit|forgot|zero/i.test(text);
+}
+
+function getTree(){let i=0;for(const[t]of UNLOCKS){if(state.total_points>=t)i++;}return TREES[i]||TREES[TREES.length-1];}
+function getStage(){let s="Empty garden — begin your journey";for(const[t,r]of UNLOCKS){if(state.total_points>=t)s=r;}return s;}
+function getNext(){for(const[t,r]of UNLOCKS){if(!state.unlocked_rewards.includes(r))return t;}return null;}
+function calcMult(d){return Math.min(+(1+d*0.1).toFixed(2),2.0);}
+function zenMsg(){return ZEN_MSGS[Math.floor(Math.random()*ZEN_MSGS.length)];}
+
+function updateUI(earned){
+  document.getElementById("sTotalPts").textContent=Math.round(state.total_points);
+  document.getElementById("sStreak").textContent=state.streak_days+"d";
+  document.getElementById("sMult").textContent="×"+calcMult(state.streak_days).toFixed(1);
+  if(earned!==undefined) document.getElementById("sEarned").textContent=earned>0?"+"+earned:"0";
+  document.getElementById("gardenStage").textContent=getStage();
+  document.getElementById("gardenTree").textContent=getTree();
+  const next=getNext();
+  const pct=next?Math.min((state.total_points/next)*100,100):100;
+  document.getElementById("progressFill").style.width=pct+"%";
+  document.getElementById("ptsCurrent").textContent=Math.round(state.total_points)+" pts";
+  document.getElementById("ptsNext").textContent=next?next+" pts":"Max ✓";
+  renderMilestones();
+}
+
+function renderMilestones(){
+  document.getElementById("milestones").innerHTML=
+    UNLOCKS.map(([t,r])=>`<div class="ms${state.unlocked_rewards.includes(r)?" done":""}">${state.unlocked_rewards.includes(r)?"✓ ":""}${r}</div>`).join("");
+}
+
+function addMsg(text,type){
+  const el=document.getElementById("chatMessages");
+  const d=document.createElement("div");
+  d.className="msg "+type;d.textContent=text;
+  el.appendChild(d);
+  el.scrollTop=el.scrollHeight;
+  return d;
+}
+
+function renderHistory(){
+  const el=document.getElementById("history");
+  if(!history.length){el.innerHTML='<div class="hist-row" style="color:#444">No days logged yet</div>';return;}
+  el.innerHTML=history.map(r=>{
+    const hab=r.habits.length?r.habits.join(", "):"no habits";
+    const badge=r.wabi?'<span class="badge grace">grace</span>':r.reset?'<span class="badge reset">reset</span>':"";
+    return `<div class="hist-row"><span>Day ${r.day}: ${hab}${badge}</span><span class="hist-pts">${r.earned?"+"+r.earned+" pts":"—"} · ${r.streak}d</span></div>`;
+  }).join("");
+}
+
+function fillHint(el){ document.getElementById("chatInput").value=el.textContent; document.getElementById("chatInput").focus(); }
+
+async function sendMessage(){
+  const input=document.getElementById("chatInput");
+  const btn=document.getElementById("sendBtn");
+  const text=input.value.trim();
+  if(!text) return;
+
+  addMsg(text,"user");
+  input.value="";
+  btn.disabled=true;
+
+  const typing=addMsg("Chispai is reflecting...","typing");
+
+  const habits=extractHabits(text);
+  const missed=isMissedDay(text)&&habits.length===0;
+  const completed=missed?[]:habits;
+
+  try{
+    const today=new Date().toISOString().split("T")[0];
+    const res=await fetch(AZURE_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({state,completed_habits:completed,today})
+    });
+
+    if(!res.ok) throw new Error("Azure Function returned "+res.status);
+    const data=await res.json();
+
+    typing.remove();
+
+    const r=data.result;
+    const s=data.state;
+    const prevUnlocks=new Set(state.unlocked_rewards);
+    state=s;
+    dayCount++;
+
+    let reply="";
+    if(completed.length>0){
+      reply+=`Wonderful! You completed ${completed.join(", ")} today.\n`;
+      reply+=`That's ${r.base_points} base pts`;
+      if(r.combo_bonus) reply+=` + ${r.combo_bonus} combo bonus`;
+      reply+=` × ${r.multiplier} multiplier = +${r.total_earned} pts. `;
+      reply+=`Streak: ${s.streak_days} day${s.streak_days!==1?"s":""}. ${zenMsg()}`;
+      if(r.new_unlocks&&r.new_unlocks.length){
+        reply+=`\n\n🌸 Zen Garden unlock: ${r.new_unlocks.join(", ")}! Your garden is blossoming.`;
+      }
+    } else {
+      if(r.wabi_sabi_grace){
+        reply="One miss is forgiven — that's Wabi-Sabi. Your streak is preserved. Rest, and return tomorrow refreshed 🌙";
+      } else if(r.streak_reset){
+        reply="Two consecutive misses — your streak resets. But your garden remains. Tomorrow is a new beginning. 🌱";
+      } else {
+        reply="I noticed you didn't mention specific habits — try saying something like 'I did water and gym today'.";
+      }
+    }
+
+    addMsg(reply,"agent");
+    history.unshift({day:dayCount,habits:completed,earned:r.total_earned,streak:s.streak_days,wabi:r.wabi_sabi_grace,reset:r.streak_reset});
+    renderHistory();
+    updateUI(r.total_earned);
+
+  } catch(err){
+    typing.remove();
+    addMsg("Couldn't reach Azure — check your connection. ("+err.message+")","error");
+  }
+
+  btn.disabled=false;
+  input.focus();
+  selectedHabits.clear();
+  HABIT_LIST.forEach(h=>document.getElementById("hb_"+h.key).classList.remove("active"));
+}
+
+// Build habit buttons
+const hgrid = document.getElementById('habitGrid');
+HABIT_LIST.forEach(h => {
+  const b = document.createElement('button');
+  b.className = 'habit-btn'; b.id = 'hb_'+h.key;
+  b.innerHTML = '<span style="font-size:18px">'+h.icon+'</span><span class="hname">'+h.label+'</span><span class="hpts">+'+h.pts+'</span>';
+  b.onclick = () => {
+    selectedHabits.has(h.key) ? selectedHabits.delete(h.key) : selectedHabits.add(h.key);
+    b.classList.toggle('active', selectedHabits.has(h.key));
+    if(selectedHabits.size > 0){
+      const names = [...selectedHabits].join(', ');
+      document.getElementById('chatInput').value = 'I completed '+names+' today';
+    } else {
+      document.getElementById('chatInput').value = '';
+    }
+  };
+  hgrid.appendChild(b);
+});
+
+updateUI(undefined);renderMilestones();
+</script>
+</body>
+</html>
