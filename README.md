@@ -1,6 +1,18 @@
-# Chispai — AI Wellness Gamification Engine
+# Chispai — AI Wellness Agent
 
-> Your AI-powered wellness companion that gamifies daily habits and grows your Zen Garden — built for the Microsoft Agents League Hackathon.
+> Your spark. Your guide. Your best self.
+
+An AI-powered wellness agent that helps users manage anxiety, build daily habits, and find balance through gamification and zen-inspired design. Bilingual: English & Spanish.
+
+The name blends **"Chispa"** (Guatemalan for inner spark) and **"Pai"** (Japanese for master/guide). Together: *the master of your inner spark.*
+
+---
+
+## Demo
+
+[![Chispai Demo](https://img.youtube.com/vi/PDXuixaqCmo/0.jpg)](https://www.youtube.com/watch?v=PDXuixaqCmo)
+
+▶️ [Watch the full demo on YouTube](https://www.youtube.com/watch?v=PDXuixaqCmo)
 
 ---
 
@@ -14,48 +26,53 @@
 
 ---
 
-## What It Does
+## The Problem
 
-Chispai's gamification layer turns daily habits into a living, evolving Zen Garden. Users type naturally ("I did 30 mins of gymming and read books") and the AI extracts habits, calls an Azure Function for points calculation, and responds with a warm zen message.
+Most people start the week motivated to drink more water, exercise, sleep better and manage anxiety… but by Wednesday they feel overwhelmed, guilty and out of control.
 
----
-
-## Architecture
-
-```
-User types in UI
-      ↓
-Habit extraction (NLP in browser)
-      ↓
-Azure Function /api/log
-      ↓
-Gamification engine (points, streaks, combos)
-      ↓
-Zen Garden updates + response
-```
+Existing wellness apps add pressure with rigid streaks and notifications that increase anxiety instead of reducing it.
 
 ---
 
-## Project Structure
+## The Solution
 
-```
-chispai/
-├── gamification_engine/
-│   ├── function_app.py  ← Azure Function HTTP triggers
-│   ├── engine.py        ← Core gamification logic
-│   ├── host.json        ← Azure Function config
-│   └── requirements.txt
-├── ui/
-│   └── chispai_final.html  ← Demo UI (chat + Azure calls)
-├── screenshots/
-│   ├── screenshot1.png
-│   └── screenshot2.png
-└── README.md
-```
+Chispai is a compassionate AI wellness agent that meets you where you are. It turns messy human weeks into realistic, gentle plans and helps you recover with kindness on hard days.
 
 ---
 
-## Gamification Rules
+## Key Features
+
+- **Sunday Voice/Text Planning** — Speak naturally and Chispai organizes your entire week
+- **Smart Daily Itinerary** — Combines your real schedule with one meaningful wellness mission
+- **Gentle Resets** — 2-minute breathing sessions with calming zen messages when you feel overwhelmed
+- **Health & Habit Tracker** — Water, vitamins, gym, reading, protein — all in one place
+- **Zen Garden Gamification** — A beautiful bonsai that grows with your real progress (no punishment for imperfect days)
+- **Bilingual Experience** — Fully available in English and Spanish
+
+---
+
+## How It Works (Agent Flow)
+
+1. **Sunday Brain Dump** → User speaks or writes freely
+2. **AI Reasoning** → Chispai understands priorities, schedule and emotional state
+3. **Personalized Plan** → Creates realistic weekly structure
+4. **Daily Support** → Gentle reminders + mindful resets
+5. **Progress & Rewards** → Gamified Zen Garden that reflects real growth
+
+---
+
+## Microsoft IQ Integration
+
+Chispai integrates **Work IQ** to provide context-aware planning:
+- Reads user's Microsoft 365 calendar, emails and meetings
+- Understands work context and suggests optimal wellness slots
+- Creates grounded, personalized recommendations based on real user data
+
+This allows the agent to reason intelligently about the user's actual life instead of generic advice.
+
+---
+
+## Gamification Rules (Aravind's Layer)
 
 | Habit    | Points |
 |----------|--------|
@@ -69,6 +86,22 @@ chispai/
 - **Combo bonus**: +25 pts when 3+ habits completed in one day
 - **Wabi-Sabi grace**: 1 miss = streak preserved. 2 consecutive misses = streak reset.
 - **Zen Garden unlocks**: 100 / 250 / 500 / 1000 pts
+
+---
+
+## Architecture
+
+```
+User types in UI
+      ↓
+Habit extraction (NLP)
+      ↓
+Azure Function /api/log
+      ↓
+Gamification engine (points, streaks, combos)
+      ↓
+Zen Garden updates + zen response
+```
 
 ---
 
@@ -117,6 +150,25 @@ POST https://chispai-gamification.azurewebsites.net/api/summary
 
 ---
 
+## Project Structure
+
+```
+chispai/
+├── gamification_engine/
+│   ├── function_app.py      ← Azure Function HTTP triggers
+│   ├── engine.py            ← Core gamification logic
+│   ├── host.json            ← Azure Function config
+│   └── requirements.txt
+├── ui/
+│   └── chispai_final.html   ← Demo UI (chat + live Azure calls)
+├── screenshots/
+│   ├── screenshot1.png
+│   └── screenshot2.png
+└── README.md
+```
+
+---
+
 ## Deploy to Azure
 
 ```bash
@@ -130,10 +182,23 @@ func azure functionapp publish chispai-gamification --python
 
 ---
 
-## Azure AI Foundry Agent
+## Built With
 
-The gamification engine is also connected to an Azure AI Foundry agent. The agent understands natural language habit logging and automatically calls the Azure Function as a tool, returning warm zen responses.
+- **Microsoft Azure AI** & **Azure Functions**
+- **Copilot Studio** (Agent orchestration)
+- **Power Automate**
+- **Work IQ** (Intelligence layer)
+- **Azure AI Foundry** (Agent + OpenAPI tool integration)
+- **Python 3.11**
 
-Built with: Azure Functions · Azure AI Foundry · Python 3.11 · Microsoft Agents League Hackathon 2026
+---
 
+## Team
 
+- **Melissa Pereira** — Founder, Product & Vision (Guatemala)
+- **Aravind Sathyanarayanan** — Dveloper, Gamification & Azure Backend
+- **Ryan Muliadi** — Copilot Studio
+
+---
+
+*Microsoft Agents League Hackathon 2026*
