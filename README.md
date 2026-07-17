@@ -197,7 +197,6 @@ func azure functionapp publish chispai-gamification --python
 
 - **Melissa Pereira** — Founder, Product & Vision (Guatemala)
 - **Aravind Sathyanarayanan** — Dveloper, Gamification & Azure Backend
-- **Ryan Muliadi** — Copilot Studio
 
 ---
 
